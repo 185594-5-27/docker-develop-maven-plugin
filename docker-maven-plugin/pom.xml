@@ -22,6 +22,12 @@
         </license>
     </licenses>
 
+    <scm>
+        <url>https://github.com/185594-5-27/docker-develop-maven-plugin</url>
+        <connection>https://github.com/185594-5-27/docker-develop-maven-plugin.git</connection>
+        <developerConnection>https://github.com/185594-5-27/docker-develop-maven-plugin</developerConnection>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
