@@ -63,8 +63,8 @@ public class DockerMavenPluginApplication extends AbstractMojo {
     /**
      * 启动容器的端口映射
      */
-    @Parameter(property = "containerRunPort")
-    private String containerRunPort;
+    @Parameter(property = "containerRunPorts")
+    private List<String> containerRunPorts;
 
     /**
      * 启动容器的名字
@@ -79,12 +79,6 @@ public class DockerMavenPluginApplication extends AbstractMojo {
     private String containerRunShare;
 
     /**
-     * 需要启动的容器的个数
-     */
-    @Parameter(property = "containerRunNum")
-    private String containerRunNum;
-
-    /**
      * 服务器的配置参数集合
      */
     @Parameter(property = "options")
@@ -93,9 +87,6 @@ public class DockerMavenPluginApplication extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        // 默认就启动一个容器
-        Integer runNum = 1;
-        String[] imageRunPorts = containerRunPort.split(",");
         // 前置判断jarTargetPath的值不能为空
         if (jarTargetPath == null || "".equals(jarTargetPath)) {
             throw new MojoFailureException("jarTargetPath属性的值不能为空。");
@@ -111,17 +102,6 @@ public class DockerMavenPluginApplication extends AbstractMojo {
         // 前置判断jarRename的值不能为空
         if (jarRename == null || "".equals(jarRename)) {
             throw new MojoFailureException("jarRename属性的值不能为空。");
-        }
-        // 若设置了启动的个数，则此处会进行转换
-        if (containerRunNum != null && !"".equals(containerRunNum)) {
-            try {
-                runNum = Integer.parseInt(containerRunNum);
-            } catch (Exception e) {
-                throw new MojoFailureException("containerRunNum属性的值只能为数字。");
-            }
-            if (imageRunPorts.length != runNum) {
-                throw new MojoFailureException("端口映射的个数和启动的容器的个数不符，请检查以后再执行该插件。");
-            }
         }
         // 获取jar的名字xxx.jar
         String jarName = jarTargetPath.split("/")[jarTargetPath.split("/").length - 1];
@@ -202,14 +182,13 @@ public class DockerMavenPluginApplication extends AbstractMojo {
             // 镜像创建成功，才可以启动容器
             if (sshResult.isSuccess()) {
                 DockerRun dockerRun;
-                for (int i = 0; i < runNum; i++) {
-                    log.info("runNum：{}", runNum);
+                for (int i = 0; i < containerRunPorts.size(); i++) {
                     dockerRun = new DockerRun();
                     dockerRun.setBack(true);
                     dockerRun.setImage(imagesHeadName);
                     // 设置容器启动的名字带上数字
                     dockerRun.setName(containerRunName + "-" + (i + 1));
-                    dockerRun.setPort(imageRunPorts[i]);
+                    dockerRun.setPort(containerRunPorts.get(i));
                     dockerRun.setShare(containerRunShare);
                     conn = LinuxManage.login(host, uName, uPass);
                     // 启动镜像
