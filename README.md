@@ -68,6 +68,34 @@ option | 服务器的ip,账号,密码他们使用以下模板的方式填入： 
                                 </goals>
                          </execution>
                    </executions>
+                   <dependencies>
+                       <dependency>
+                           <groupId>ch.ethz.ganymed</groupId>
+                           <artifactId>ganymed-ssh2</artifactId>
+                           <version>262</version>
+                           <scope>compile</scope>
+                       </dependency>
+                       <dependency>
+                           <groupId>commons-io</groupId>
+                           <artifactId>commons-io</artifactId>
+                           <version>2.6</version>
+                           <type>jar</type>
+                           <scope>compile</scope>
+                       </dependency>
+                       <dependency>
+                           <groupId>commons-lang</groupId>
+                           <artifactId>commons-lang</artifactId>
+                           <version>2.6</version>
+                           <type>jar</type>
+                           <scope>compile</scope>
+                       </dependency>
+                       <dependency>
+                           <groupId>org.slf4j</groupId>
+                           <artifactId>jul-to-slf4j</artifactId>
+                           <version>1.7.25</version>
+                           <scope>compile</scope>
+                       </dependency>
+                   </dependencies>
               </plugin>
 ## 视频地址
 后续补上使用的视频的地址
