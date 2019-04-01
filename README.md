@@ -24,7 +24,7 @@ option | 服务器的ip,账号,密码他们使用以下模板的方式填入： 
 ## 快速开始
 1. 由于该项目没有将maven依赖上传到maven的服务器，因此大家无法正常下载该依赖，大家可以直接把这个工程给git到
 本地，然后使用install命令将这个插件安装到本地的maven依赖，或者大家可以直接打开doc文件夹底下的quick_start，
-直接将里面的install.bat和docker-developer-maven-plugin-1.0.0-SNAPSHOT.jar拷贝到你本地的随便一个目录，然后直
+直接将里面的install.bat和docker-developer-maven-plugin-1.1.1-SNAPSHOT.jar拷贝到你本地的随便一个目录，然后直
 接双击install.bat【此处只针对window的用户，其他系统用户直接使用命令进行安装】
 2. 安装好maven依赖以后大家可以直接打开相应的工程将以下的代码copy到自己的工程的pom.xml的plugins里，然后根据
 自己的需求更改以下的配置：
