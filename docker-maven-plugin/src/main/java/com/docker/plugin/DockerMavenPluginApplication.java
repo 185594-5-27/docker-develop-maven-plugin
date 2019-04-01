@@ -8,7 +8,6 @@ import com.docker.plugin.entity.DockerContainer;
 import com.docker.plugin.entity.DockerRun;
 import com.docker.plugin.entity.SshResult;
 import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -84,9 +83,15 @@ public class DockerMavenPluginApplication extends AbstractMojo {
     @Parameter(property = "options")
     private List<String> options;
 
+    /**
+     * 容器的网络的模式
+     */
+    @Parameter(property = "netType")
+    private String netType;
+
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() throws  MojoFailureException {
         // 前置判断jarTargetPath的值不能为空
         if (jarTargetPath == null || "".equals(jarTargetPath)) {
             throw new MojoFailureException("jarTargetPath属性的值不能为空。");
@@ -99,15 +104,15 @@ public class DockerMavenPluginApplication extends AbstractMojo {
         if (dockerFilePath == null || "".equals(dockerFilePath)) {
             throw new MojoFailureException("dockerFilePath属性的值不能为空。");
         }
-        // 前置判断jarRename的值不能为空
-        if (jarRename == null || "".equals(jarRename)) {
-            throw new MojoFailureException("jarRename属性的值不能为空。");
-        }
         // 获取jar的名字xxx.jar
         String jarName = jarTargetPath.split("/")[jarTargetPath.split("/").length - 1];
         // 若镜像头名字为空则使用jar包的头名字来进行镜像的删除
         if (imagesHeadName == null || "".equals(imagesHeadName)) {
             imagesHeadName = jarName.split("\\.")[jarName.split("\\.").length - 2];
+        }
+        // 前置判断jarRename的值不能为空
+        if (jarRename == null || "".equals(jarRename)) {
+            jarRename = imagesHeadName + ".jar";
         }
         // 容器的名字若为空则直接使用镜像名字作为容器名字启动
         if (containerRunName == null || "".equals(containerRunName)) {
@@ -124,6 +129,9 @@ public class DockerMavenPluginApplication extends AbstractMojo {
             if (conn == null) {
                 throw new MojoFailureException("登录失败！失败原因：请确定账号密码以及IP地址是否正确！");
             }
+            // 实现文件的重命名,同时删除旧的文件
+            LinuxManage.execute(conn, "cd " + dockerImagesPath + ";rm -rf " + jarRename + "; mv " + jarName + " " + jarRename);
+            // 上传文件
             SshUploadFileUtil sshUploadFileUtil = new SshUploadFileUtil();
             File file = new File(jarTargetPath);
             if (file == null) {
@@ -135,7 +143,6 @@ public class DockerMavenPluginApplication extends AbstractMojo {
                 throw new MojoFailureException("文件上传失败！");
             }
             // 实现上传dockerfile文件
-            conn = LinuxManage.login(host, uName, uPass);
             file = new File(dockerFilePath);
             if (file == null) {
                 throw new MojoFailureException("在" + dockerFilePath + "路径底下没有找到相应的dockerFile文件");
@@ -145,11 +152,12 @@ public class DockerMavenPluginApplication extends AbstractMojo {
             } catch (IOException e) {
                 throw new MojoFailureException("dockerfile文件上传失败！");
             }
-            // 实现删除旧版本的镜像
-            conn = LinuxManage.login(host, uName, uPass);
+            /**
+             * 实现删除旧版本的容器和镜像
+             */
             // 获取所有的启动的容器
             List<DockerContainer> dockerContainerList = (List<DockerContainer>) DockerManage.getDockerContainers(conn).getObj();
-            StringBuilder containerIds = new StringBuilder("");
+            StringBuilder containerIds = new StringBuilder();
             // 匹配所有包含imagesHeadName的容器
             for (DockerContainer d : dockerContainerList) {
                 if (d.getImage().indexOf(imagesHeadName) != -1) {
@@ -158,24 +166,16 @@ public class DockerMavenPluginApplication extends AbstractMojo {
             }
             // 判断当前是否有需要删除的容器，若containerIds不为空则有需要删除的容器
             if (!"".equals(containerIds.toString())) {
-                conn = LinuxManage.login(host, uName, uPass);
                 // 停止所有镜像为imagesHeadName属性的值的容器
                 DockerManage.dockerStop(conn, containerIds.toString());
-                conn = LinuxManage.login(host, uName, uPass);
                 // 删除所有的镜像为imagesHeadName属性的值的停止的容器
                 DockerManage.dockerRm(conn, containerIds.toString());
-                conn = LinuxManage.login(host, uName, uPass);
                 // 删除镜像为imagesHeadName属性的值
                 DockerManage.removeImage(conn, imagesHeadName);
             } else {
-                conn = LinuxManage.login(host, uName, uPass);
                 // 删除镜像为imagesHeadName属性的值
                 DockerManage.removeImage(conn, imagesHeadName);
             }
-            // 实现文件的重命名,同时删除旧的文件
-            conn = LinuxManage.login(host, uName, uPass);
-            LinuxManage.execute(conn, "cd " + dockerImagesPath + ";rm -rf " + jarRename + "; mv " + jarName + " " + jarRename);
-            conn = LinuxManage.login(host, uName, uPass);
             String dockerFile = dockerFilePath.split("/")[dockerFilePath.split("/").length - 1];
             // 创建镜像
             SshResult sshResult = DockerManage.dockerBuild(conn, imagesHeadName, dockerImagesPath, dockerFile);
@@ -190,7 +190,7 @@ public class DockerMavenPluginApplication extends AbstractMojo {
                     dockerRun.setName(containerRunName + "-" + (i + 1));
                     dockerRun.setPort(containerRunPorts.get(i));
                     dockerRun.setShare(containerRunShare);
-                    conn = LinuxManage.login(host, uName, uPass);
+                    dockerRun.setNetType(netType);
                     // 启动镜像
                     DockerManage.dockerImageStart(conn, dockerRun);
                 }

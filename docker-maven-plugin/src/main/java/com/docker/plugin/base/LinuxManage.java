@@ -124,9 +124,6 @@ public class LinuxManage {
         } catch (IOException e) {
             log.info("执行的命令失败：{},错误原因：{}", cmd,e.getMessage());
         } finally {
-            if (conn != null) {
-                conn.close();
-            }
             if (session != null) {
                 session.close();
             }

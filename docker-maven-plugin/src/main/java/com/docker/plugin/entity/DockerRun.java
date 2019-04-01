@@ -32,6 +32,18 @@ public class DockerRun {
      */
     private String share;
 
+    /**
+     * 容器的网络的模式
+     */
+    private String netType;
+
+    public String getNetType() {
+        return netType;
+    }
+
+    public void setNetType(String netType) {
+        this.netType = netType;
+    }
 
     public String getName() {
         return name;
@@ -90,6 +102,9 @@ public class DockerRun {
         }
         if(image!=null&&!"".equals(image)){
             command.append(" "+image);
+        }
+        if(netType!=null&&!"".equals(netType)){
+            command.append(" --net=" + netType);
         }
         return command.toString();
     }

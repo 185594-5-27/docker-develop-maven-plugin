@@ -46,9 +46,6 @@ public class DockerManage {
             log.info("打开服务器连接失败，失败原因：{}", e.getMessage());
             return new SshResult(false, "9999", "打开服务器连接失败，失败原因：" + e.getMessage());
         } finally {
-            if (conn != null) {
-                conn.close();
-            }
             if (session != null) {
                 session.close();
             }
@@ -73,9 +70,6 @@ public class DockerManage {
             log.info("打开服务器连接失败，失败原因：{}", e.getMessage());
             return new SshResult(false, "9999", "打开服务器连接失败，失败原因：" + e.getMessage());
         } finally {
-            if (conn != null) {
-                conn.close();
-            }
             if (session != null) {
                 session.close();
             }
@@ -100,9 +94,6 @@ public class DockerManage {
             log.info("打开服务器连接失败，失败原因：{}", e.getMessage());
             return new SshResult(false, "9999", "打开服务器连接失败，失败原因：" + e.getMessage());
         } finally {
-            if (conn != null) {
-                conn.close();
-            }
             if (session != null) {
                 session.close();
             }
@@ -141,9 +132,6 @@ public class DockerManage {
             log.info("打开服务器连接失败，失败原因：{}", e.getMessage());
             return new SshResult(false, "9999", "打开服务器连接失败，失败原因：" + e.getMessage());
         } finally {
-            if (conn != null) {
-                conn.close();
-            }
             if (session != null) {
                 session.close();
             }
@@ -180,9 +168,6 @@ public class DockerManage {
             log.info("打开服务器连接失败，失败原因：{}", e.getMessage());
             return new SshResult(false, "9999", "打开服务器连接失败，失败原因：" + e.getMessage());
         } finally {
-            if (conn != null) {
-                conn.close();
-            }
             if (session != null) {
                 session.close();
             }
@@ -220,9 +205,7 @@ public class DockerManage {
                 for (int i = 1; i < dockerPsResults.length; i++) {
                     // 根据至少两个空格符以上进行一行数据的拆分
                     dockerContainerResult = dockerPsResults[i].split("\\s{2,}");
-                    if (dockerContainerResult.length >= 7) {
-                        dockerContainerList.add(new DockerContainer(dockerContainerResult));
-                    }
+                    dockerContainerList.add(new DockerContainer(dockerContainerResult));
                 }
             }
             log.info("获取的容器的返回是：{}", dockerPsCommandResult);
@@ -230,9 +213,6 @@ public class DockerManage {
             log.info("打开服务器连接失败，失败原因：{}", e.getMessage());
             return new SshResult(false, "9999", "打开服务器连接失败，失败原因：" + e.getMessage());
         } finally {
-            if (conn != null) {
-                conn.close();
-            }
             if (session != null) {
                 session.close();
             }
@@ -262,9 +242,6 @@ public class DockerManage {
             log.info("打开服务器连接失败，失败原因：{}", e.getMessage());
             return new SshResult(false, "9999", "打开服务器连接失败，失败原因：" + e.getMessage());
         } finally {
-            if (conn != null) {
-                conn.close();
-            }
             if (session != null) {
                 session.close();
             }
@@ -292,9 +269,6 @@ public class DockerManage {
             log.info("打开服务器连接失败，失败原因：{}", e.getMessage());
             return new SshResult(false, "9999", "打开服务器连接失败，失败原因：" + e.getMessage());
         } finally {
-            if (conn != null) {
-                conn.close();
-            }
             if (session != null) {
                 session.close();
             }
@@ -346,9 +320,6 @@ public class DockerManage {
             log.info("打开服务器连接失败，失败原因：{}", e.getMessage());
             return new SshResult(false, "9999", "打开服务器连接失败！失败原因：" + e.getMessage(), dockerImagesList);
         } finally {
-            if (conn != null) {
-                conn.close();
-            }
             if (session != null) {
                 session.close();
             }

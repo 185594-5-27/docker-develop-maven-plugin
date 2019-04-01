@@ -94,4 +94,9 @@ public class DockerCommands {
      */
     public static final String DOCKER_SYSTEMCTL_ENABLE = "systemctl enable docker";
 
+    /**
+     * 表示程序退出的标志
+     */
+    public static final String DOCKER_CONTAINER_STATUS_EXITED = "Exited";
+
 }

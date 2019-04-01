@@ -1,5 +1,7 @@
 package com.docker.plugin.entity;
 
+import com.docker.plugin.constant.DockerCommands;
+
 /**
  * @author linzf
  * @since 2019-02-13
@@ -52,8 +54,13 @@ public class DockerContainer {
         this.command = dockerContainers[2];
         this.created = dockerContainers[3];
         this.status = dockerContainers[4];
-        this.ports = dockerContainers[5];
-        this.names = dockerContainers[6];
+        // 表示当前的程序已经停止了
+        if(this.status.indexOf(DockerCommands.DOCKER_CONTAINER_STATUS_EXITED)!=-1){
+            this.names = dockerContainers[5];
+        }else{
+            this.ports = dockerContainers[5];
+            this.names = dockerContainers[6];
+        }
     }
 
     public String getContainerId() {
